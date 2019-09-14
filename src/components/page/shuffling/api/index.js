@@ -6,7 +6,7 @@ let vm = new Vue()
 
 let Api = {
   baseUrl:baseUrl,
-  _doPromise(url, params) {
+  _doGetPromise(url, params) {
     return new Promise((resolve, reject) => {
       vm.$http.get(url, {
         params: params
@@ -19,12 +19,26 @@ let Api = {
       })
     })
   },
-  getTest(url) {
-    return this._doPromise(baseUrl + 'getRenderList', {
-      regionId: regionId,
-      regionGrade: regionGrade
+  _doPostPromise(url, data) {
+    return new Promise((resolve, reject) => {
+      vm.$http.post(url, {
+        data: data
+      }).then(res => {
+        resolve(res.data)
+      }, res => {
+        // error callback
+        reject(res)
+        console.log('error: ', res)
+      })
     })
   },
+  getShufflingGood(page,total) {
+    return this._doGetPromise(baseUrl + '/carouselInfo/carouselInfoList', {
+      page: page,
+      total: total
+    })
+  },
+
 
 
 }

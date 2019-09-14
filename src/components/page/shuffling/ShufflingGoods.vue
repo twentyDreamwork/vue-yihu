@@ -1,124 +1,90 @@
 <template>
   <div class="app-container">
-    <!--表格渲染-->
-    <el-table v-loading="loading" :data="data" size="small" style="width: 100%;">
-      <el-table-column label="商品图片">
-        <template slot-scope="scope">
-          <img :src="scope.row.goodsImg" width="128" height="51">
-        </template>
-      </el-table-column>
-      <el-table-column prop="goodsUrl" label="商品链接"/>
-      <el-table-column prop="user" label="上传用户"/>
-       <el-table-column label="状态" align="center">
-        <template slot-scope="scope">
-          <div v-for="item in dicts" :key="item.id">
-            <el-tag v-if="scope.row.enabled.toString() === item.value" :type="scope.row.enabled ? '' : 'info'">{{ item.label }}</el-tag>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" prop="createtime" label="创建日期">
-        <template slot-scope="scope">
-          <span>1111</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="note" label="备注"/>
-      <el-table-column label="操作" width="125" align="center">
-        <template slot-scope="scope">
-          <el-popover
-            :ref="scope.row.id"
-            placement="top"
-            width="180">
-            <p>确定删除本条数据吗？</p>
-            <div style="text-align: right; margin: 0">
-              <el-button size="mini" type="text" @click="$refs[scope.row.id].doClose()">取消</el-button>
-              <el-button :loading="delLoading" type="primary" size="mini" @click="subDelete(scope.row.id)">确定</el-button>
-            </div>
-            <el-button slot="reference" type="danger" icon="el-icon-delete" size="mini"/>
-          </el-popover>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!--分页组件-->
-    <el-pagination
-      :total="total"
-      style="margin-top: 8px;"
-      layout="total, prev, pager, next, sizes"
-      @size-change="sizeChange"
-      @current-change="pageChange"/>
-    <!-- </el-col>
-  </el-row> -->
+    <lb-table v-loading="loading"
+              :column="tableData.column"
+              :data="tableData.data"
+              pagination
+              background
+              layout="total, sizes, prev, pager, next, jumper"
+              :page-sizes="[5, 10, 20, 30]"
+              :pager-count="5"
+              :current-page.sync="currentPage"
+              :total="100"
+              :page-size="pageSize"
+              @size-change="handleSizeChange"
+              @p-current-change="handleCurrentChange">
+    </lb-table>
   </div>
 </template>
 
 <script>
-  import initData from '@/mixins/initData'
+  import LbTable from '../module/lb-table/lb-table'
   import Api from './api'
+
+
   export default {
-    mixins: [initData],
-    data() {
+    name: 'HelloWorld',
+    components: {
+      LbTable
+    },
+    data () {
       return {
-        height: document.documentElement.clientHeight - 180 + 'px;',
-        delLoading: false, sup_this: this, deptName: '', depts: [], deptId: null,
-        defaultProps: {
-          children: 'children',
-          label: 'name'
-        }
+        tableData: {
+          column: [
+            {
+              prop: 'date',
+              label: '日期'
+            },
+            {
+              prop: 'name',
+              label: '姓名'
+            },
+            {
+              prop: 'address',
+              label: '地址'
+            }
+          ],
+          data: []
+        },
+        loading: false,
+        currentPage: 1,
+        pageSize: 5,
       }
     },
-    mounted: function() {
-      const that = this
-      window.onresize = function temp() {
-        that.height = document.documentElement.clientHeight - 180 + 'px;'
-      }
+    created () {
+      this.createData(this.pageSize)
     },
     methods: {
-      beforeInit() {
-        this.url = Api.baseUrl+"carouselInfo/carouselInfoList"
-        const query = this.query
-        const type = query.type
-        const value = query.value
-        const enabled = query.enabled
-        this.params = { page: this.page, total: this.size}
-        if (type && value) { this.params[type] = value }
-        if (enabled !== '' && enabled !== null) { this.params['enabled'] = enabled }
-        return true
-      },
-      subDelete(id) {
-        this.delLoading = true
-        del(id).then(res => {
-          this.delLoading = false
-          this.$refs[id].doClose()
-          this.init()
-          this.$notify({
-            title: '删除成功',
-            type: 'success',
-            duration: 2500
+      createData (length) {
+        Api.getShufflingGood("1","10")
+          .then(data => {
+            console.log(data);
+          }).catch(err => {
+
+        })
+
+        this.loading = true
+        let data = []
+        for (let i = 0; i < length; i++) {
+          data.push({
+            date: '2016-05-02',
+            name: `王小虎-${this.currentPage}-${i + 1}`,
+            address: `上海市普陀区金沙江路 -${this.currentPage}-${i + 1} 弄`
           })
-        }).catch(err => {
-          this.delLoading = false
-          this.$refs[id].doClose()
-          console.log(err.response.data.message)
-        })
-      },
-      getDeptDatas() {
-        const sort = 'id,desc'
-        const params = { sort: sort }
-        if (this.deptName) { params['name'] = this.deptName }
-        getDepts(params).then(res => {
-          this.depts = res.content
-        })
-      },
-      handleNodeClick(data) {
-        if (data.pid === 0) {
-          this.deptId = null
-        } else {
-          this.deptId = data.id
         }
-        this.init()
+        setTimeout(() => {
+          this.tableData.data = data
+          this.loading = false
+        }, 1000)
+      },
+      handleSizeChange (val) {
+        this.currentPage = 1
+        this.pageSize = val
+        this.createData(this.pageSize)
+      },
+      handleCurrentChange () {
+        this.createData(this.pageSize)
       }
     }
   }
 </script>
-
-<style scoped>
-</style>
