@@ -1,6 +1,7 @@
 import Vue from 'vue'
+const path = require('path')
+const baseUrl = process.env.BASE_API
 let vm = new Vue()
-const baseUrl = "http://192.168.1.2:8081/";
 
 
 let Api = {
