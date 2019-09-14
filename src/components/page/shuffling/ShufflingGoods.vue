@@ -1,90 +1,219 @@
 <template>
-  <div class="app-container">
-    <lb-table v-loading="loading"
-              :column="tableData.column"
-              :data="tableData.data"
-              pagination
-              background
-              layout="total, sizes, prev, pager, next, jumper"
-              :page-sizes="[5, 10, 20, 30]"
-              :pager-count="5"
-              :current-page.sync="currentPage"
-              :total="100"
-              :page-size="pageSize"
-              @size-change="handleSizeChange"
-              @p-current-change="handleCurrentChange">
-    </lb-table>
+  <div>
+    <el-button @click="handleAdd">添加</el-button>
+
+    <el-table
+      :data="tableData.list"
+      border
+      style="width: 100%">
+      <el-table-column
+        label="创建日期"
+        width="200">
+        <template slot-scope="scope">
+          <i class="el-icon-time"></i>
+          <span style="margin-left: 10px">{{ scope.row.createdAt }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="imgPath"
+        label="图片路径"
+        width="300">
+        <template slot-scope="scope">
+          <img :src="scope.row.goodsImg" alt="" style="width: 256px;height: 102px">
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="淘宝地址"
+        width="350">
+        <template slot-scope="scope">
+          <span>{{ scope.row.contents }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="tag"
+        label="商品状态"
+        width="100">
+        <template slot-scope="scope">
+          <el-tag
+            :type="scope.row.type === '1' ? 'primary' : 'success'"
+            disable-transitions>{{scope.row.type| goodsTypeFilter}}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="备注"
+        width="350">
+        <template slot-scope="scope">
+          <span>{{ scope.row.remark }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column fixed="right"
+                       label="操作"
+                       width="100">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            @click="handleEdit(scope.$index, scope.row)">编辑
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
+            @click="handleDelete(scope.$index, scope.row)">删除
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- 分页器 -->
+    <div class="block" style="margin-top:15px;">
+      <el-pagination align='center' @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                     :current-page="tableData.pages" :page-sizes="[10,20,50,100]" :page-size="tableData.page"
+                     layout="total, sizes, prev, pager, next, jumper" :total="tableData.total">
+      </el-pagination>
+    </div>
+    <el-dialog :visible.sync="dialogVisible"
+               title="编辑"
+               append-to-body>
+      <div class="dialog-content">
+        <el-form v-if="currentEdit"
+                 label-width="100px">
+
+          <el-form-item label="淘宝地址">
+            <el-input v-model="currentEdit.contents"
+                      placeholder="请输入淘宝地址">
+            </el-input>
+          </el-form-item>
+
+          <el-form-item label="备注">
+            <el-input v-model="currentEdit.remark"
+                      type="textarea"
+                      placeholder="请输入备注">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="修改状态">
+            <el-select
+              v-model="stateValue"
+              clearable
+              placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+
+        </el-form>
+      </div>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="confirm">确 定
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-  import LbTable from '../module/lb-table/lb-table'
   import Api from './api'
 
-
   export default {
-    name: 'HelloWorld',
-    components: {
-      LbTable
-    },
-    data () {
+    data() {
       return {
         tableData: {
-          column: [
-            {
-              prop: 'date',
-              label: '日期'
-            },
-            {
-              prop: 'name',
-              label: '姓名'
-            },
-            {
-              prop: 'address',
-              label: '地址'
-            }
-          ],
-          data: []
+          data: [],
+          pages: 1, // 当前页码
+          total: 20, // 总条数
+          page: 1 // 每页的数据条数
         },
-        loading: false,
-        currentPage: 1,
-        pageSize: 5,
+        currentEdit: null,
+        dialogVisible: false,
+        options: [{
+          value: '0',
+          label: '下架'
+        }, {
+          value: '1',
+          label: '上架'
+        }],
+        stateValue: []
       }
     },
-    created () {
-      this.createData(this.pageSize)
+    created() {
+      this.createData(this.pageSize, this.total)
     },
     methods: {
-      createData (length) {
-        Api.getShufflingGood("1","10")
+      createData(pageSize, total) {
+        this.loading = true;
+        Api.getShufflingGood(pageSize, total)
           .then(data => {
-            console.log(data);
+            this.loading = false
+            this.tableData = data.result;
           }).catch(err => {
+          console.log(err);
+          this.loading = false
+          this.$message({
+            showClose: true,
+            message: '请求数据错误',
+            type: 'error'
+          });
 
         })
 
-        this.loading = true
-        let data = []
-        for (let i = 0; i < length; i++) {
-          data.push({
-            date: '2016-05-02',
-            name: `王小虎-${this.currentPage}-${i + 1}`,
-            address: `上海市普陀区金沙江路 -${this.currentPage}-${i + 1} 弄`
-          })
-        }
-        setTimeout(() => {
-          this.tableData.data = data
+      },
+      handleAdd() {
+        alert("点击了添加")
+      },
+      handleEdit(index, row) {
+        console.log(index, row);
+        this.currentEdit = row
+        this.dialogVisible = true
+        console.log("点击了编辑")
+      },
+      handleDelete(index, row) {
+        console.log(index, row);
+        console.log("点击了删除")
+
+      },
+      handleSizeChange(val) {
+        this.pages = 1;
+        this.page = val;
+        this.createData(this.pages, this.page)
+      },
+      handleCurrentChange(val) {
+        this.pages = val;
+        this.createData(this.pages, this.page)
+      },
+      confirm() {
+        this.currentEdit.type = this.stateValue;
+        this.loading = true;
+        Api.updateShufflingGood(this.currentEdit)
+          .then(data => {
+            this.loading = false
+            this.$message({
+              showClose: true,
+              message: '数据更新成功',
+              type: 'success'
+            });
+            this.dialogVisible = false
+
+          }).catch(err => {
+          console.log(err);
           this.loading = false
-        }, 1000)
+          this.$message({
+            showClose: true,
+            message: '请求数据错误',
+            type: 'error'
+          });
+
+        })
       },
-      handleSizeChange (val) {
-        this.currentPage = 1
-        this.pageSize = val
-        this.createData(this.pageSize)
-      },
-      handleCurrentChange () {
-        this.createData(this.pageSize)
+      filterTag(value, row) {
+        return row.tag === value;
       }
+
     }
   }
 </script>

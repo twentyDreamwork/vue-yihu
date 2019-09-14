@@ -21,9 +21,7 @@ let Api = {
   },
   _doPostPromise(url, data) {
     return new Promise((resolve, reject) => {
-      vm.$http.post(url, {
-        data: data
-      }).then(res => {
+      vm.$http.post(url, JSON.parse(JSON.stringify(data))).then(res => {
         resolve(res.data)
       }, res => {
         // error callback
@@ -38,7 +36,10 @@ let Api = {
       total: total
     })
   },
-
+  updateShufflingGood(data) {
+    console.log(data);
+    return this._doPostPromise(baseUrl + '/carouselInfo/updateCarouselInfo', data)
+  },
 
 
 }
