@@ -3,6 +3,7 @@ export default {
     renderHeader: (h, { store }) => {
       console.log(store)
       return (
+        `
         <el-checkbox
       disabled={store.states.data && store.states.data.length === 0}
       indeterminate={
@@ -11,10 +12,12 @@ export default {
       nativeOn-click={store.toggleAllSelection}
       value={store.states.isAllSelected}
       />
+      `
     )
     },
     renderCell: (h, { row, column, store, $index }) => {
       return (
+        `
         <el-checkbox
       nativeOn-click={event => event.stopPropagation()}
       value={store.isSelected(row)}
@@ -26,7 +29,7 @@ export default {
       on-input={() => {
         store.commit('rowSelectedChanged', row)
       }}
-      />
+      />`
     )
     },
     sortable: false,
@@ -34,7 +37,7 @@ export default {
   },
   index: {
     renderHeader: (h, scope) => {
-      return <span>{scope.column.label || '#'}</span>
+      return `<span>{scope.column.label || '#'}</span>`
     },
     renderCell: (h, { $index, column }) => {
       let i = $index + 1
@@ -46,18 +49,18 @@ export default {
         i = index($index)
       }
 
-      return <div>{i}</div>
+      return `<div>{i}</div>`
     },
     sortable: false
   },
   expand: {
     renderHeader: (h, scope) => {
-      return <span>{scope.column.label || ''}</span>
+      return `<span>{scope.column.label || ''}</span>`
     },
     renderCell: (h, { row, store }, proxy) => {
       const expanded = store.states.expandRows.indexOf(row) > -1
       return (
-        <div
+        `<div
     class={
         'el-table__expand-icon ' +
           (expanded ? 'el-table__expand-icon--expanded' : '')
@@ -65,7 +68,7 @@ export default {
       on-click={e => proxy.handleExpandClick(row, e)}
     >
     <i class='el-icon el-icon-arrow-right' />
-        </div>
+        </div>`
     )
     },
     sortable: false,
