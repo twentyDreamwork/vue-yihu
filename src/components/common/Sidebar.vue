@@ -72,6 +72,10 @@ export default {
             {
               index: 'appUpload',
               title: 'APP上传'
+            },
+            {
+              index: 'goodsClassify',
+              title: '商品分类'
             }
           ]
         },
