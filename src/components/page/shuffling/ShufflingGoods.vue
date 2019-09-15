@@ -137,6 +137,7 @@
             :on-remove="handleRemove"
             :on-success="handleAvatarSuccess"
             :action="fileUploadUrl"
+            ref="upload"
             list-type="picture-card" :limit="1">
             <i class="el-icon-plus"/>
           </el-upload>
@@ -349,8 +350,6 @@
       },
       handlePictureCardPreview(file) {
         console.log(file.url)
-        // this.imageUrl = file.url
-        // this.dialogVisible = true
       },
       handleAvatarSuccess(res, file) {
         if (res.code == 200) {

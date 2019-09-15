@@ -23,7 +23,7 @@ let timeFilter = function (value) {
   return value + "22"
 }
 let goodsTypeFilter = function (value) {
-  var type = value == 1 ? "上架" : "下架";
-  return type;
+  return value == 1 ? "上架" : "下架";
 }
+
 export {MoneyFormat, timeFilter,goodsTypeFilter}
