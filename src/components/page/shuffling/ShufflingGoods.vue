@@ -231,6 +231,12 @@
       },
       handleAdd() {
         this.addDialogVisible = true
+        this.uploadData={
+          contents: "",
+          remark: "",
+          goodsImg: "",
+          type: ""
+        }
       },
       handleEdit(index, row) {
         console.log(index, row);
@@ -350,8 +356,6 @@
         if (res.code == 200) {
           this.uploadData.goodsImg = res.result
         }
-        console.log(this.uploadData)
-
       }
     }
   }
