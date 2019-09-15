@@ -330,11 +330,11 @@
         })
       },
       handleAdd() {
-        console.info("添加界面");
+        // console.info("添加界面");
         // 获取类型
         Api.getGoodsClass()
           .then(data =>{
-            console.info(data.result);
+            // console.info(data.result);
             this.classAll = data.result;
           })
           .catch(err => {
@@ -348,16 +348,29 @@
         this.editdialogVisible = true;
       },
       handleEdit(index,row) {
-        console.log(row);
+        // console.log(row);
+        // 获取类型
+        Api.getGoodsClass()
+          .then(data =>{
+            console.info(data.result);
+            this.classAll = data.result;
+          })
+          .catch(err => {
+            this.$message({
+              showClose: true,
+              message: '请求数据错误',
+              type: 'error'
+            });
+          })
         this.currentEdit = row;
         this.editdialogVisible = true;
         this.dialogVisible=true;
       },
       handleDelete(index, row) {
-        console.log(index, row);
+        // console.log(index, row);
         this.delDialogVisible=true;
         this.delData = row;
-        console.log("点击了删除")
+        // console.log("点击了删除")
 
       },
       delConfirm() {
@@ -416,11 +429,11 @@
         this.createData(this.pageSize)
       },
       handleRemove(file, fileList) {
-        console.log(file, fileList)
+        // console.log(file, fileList)
         this.imgUrl = '';
       },
       handlePictureCardPreview(file) {
-        console.log(file.url)
+        // console.log(file.url)
       },
       handleAvatarSuccess(res, file) {
         if (res.code == 200) {
