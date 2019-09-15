@@ -167,7 +167,6 @@
               label: '单次积分',
               align:'center'
             },
-
             {
               prop: 'channelPlatform',
               label: '渠道平台',

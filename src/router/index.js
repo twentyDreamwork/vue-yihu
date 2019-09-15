@@ -50,6 +50,13 @@ export default new Router({
           }
         },
         {
+          path: '/goodsClassify',
+          component: resolve => require(['../components/page/goodsClassifyList/GoodsClassify.vue'], resolve),
+          meta: {
+            title: '商品分类'
+          }
+        },
+        {
           path: '/userManagement',
           component: resolve => require(['../components/page/UserManagement.vue'], resolve),
           meta: {
