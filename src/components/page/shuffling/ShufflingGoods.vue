@@ -71,48 +71,74 @@
                      layout="total, sizes, prev, pager, next, jumper" :total="tableData.total">
       </el-pagination>
     </div>
-    <el-dialog :visible.sync="dialogVisible"
-               title="编辑"
+    <el-dialog :visible.sync="editdialogVisible"
+                           title="编辑"
+                           append-to-body>
+    <div class="dialog-content">
+      <el-form v-if="currentEdit"
+               label-width="100px">
+
+        <el-form-item label="淘宝地址">
+          <el-input v-model="currentEdit.contents"
+                    placeholder="请输入淘宝地址">
+          </el-input>
+        </el-form-item>
+
+        <el-form-item label="备注">
+          <el-input v-model="currentEdit.remark"
+                    type="textarea"
+                    placeholder="请输入备注">
+          </el-input>
+        </el-form-item>
+        <el-form-item label="修改状态">
+          <el-select
+            v-model="stateValue"
+            clearable
+            placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+      </el-form>
+    </div>
+    <div slot="footer"
+         class="dialog-footer">
+      <el-button @click="dialogVisible = false">取 消</el-button>
+      <el-button type="primary"
+                 @click="editConfirm">确 定
+      </el-button>
+    </div>
+  </el-dialog>
+
+    <el-dialog :visible.sync="addDialogVisible"
+               title="添加"
                append-to-body>
       <div class="dialog-content">
-        <el-form v-if="currentEdit"
-                 label-width="100px">
 
-          <el-form-item label="淘宝地址">
-            <el-input v-model="currentEdit.contents"
-                      placeholder="请输入淘宝地址">
-            </el-input>
-          </el-form-item>
-
-          <el-form-item label="备注">
-            <el-input v-model="currentEdit.remark"
-                      type="textarea"
-                      placeholder="请输入备注">
-            </el-input>
-          </el-form-item>
-          <el-form-item label="修改状态">
-            <el-select
-              v-model="stateValue"
-              clearable
-              placeholder="请选择">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-
-        </el-form>
       </div>
       <div slot="footer"
            class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="addDialogVisible = false">取 消</el-button>
         <el-button type="primary"
-                   @click="confirm">确 定
+                   @click="addConfirm">确 定
         </el-button>
       </div>
+    </el-dialog>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="delDialogVisible"
+      width="30%">
+      <span>确认删除？</span>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="delDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="delConfirm">确 定</el-button>
+  </span>
     </el-dialog>
   </div>
 </template>
@@ -130,7 +156,9 @@
           page: 1 // 每页的数据条数
         },
         currentEdit: null,
-        dialogVisible: false,
+        editdialogVisible: false,
+        addDialogVisible:false,
+        delDialogVisible:false,
         options: [{
           value: '0',
           label: '下架'
@@ -138,7 +166,8 @@
           value: '1',
           label: '上架'
         }],
-        stateValue: []
+        stateValue: [],
+        delData:[]
       }
     },
     created() {
@@ -169,11 +198,13 @@
       handleEdit(index, row) {
         console.log(index, row);
         this.currentEdit = row
-        this.dialogVisible = true
+        this.editdialogVisible = true
         console.log("点击了编辑")
       },
       handleDelete(index, row) {
         console.log(index, row);
+        this.delDialogVisible=true
+        this.delData = row;
         console.log("点击了删除")
 
       },
@@ -186,7 +217,7 @@
         this.pages = val;
         this.createData(this.pages, this.page)
       },
-      confirm() {
+      addConfirm() {
         this.currentEdit.type = this.stateValue;
         this.loading = true;
         Api.updateShufflingGood(this.currentEdit)
@@ -197,7 +228,7 @@
               message: '数据更新成功',
               type: 'success'
             });
-            this.dialogVisible = false
+            this.editdialogVisible = false
 
           }).catch(err => {
           console.log(err);
@@ -210,10 +241,53 @@
 
         })
       },
-      filterTag(value, row) {
-        return row.tag === value;
-      }
+      editConfirm() {
+        this.currentEdit.type = this.stateValue;
+        this.loading = true;
+        Api.updateShufflingGood(this.currentEdit)
+          .then(data => {
+            this.loading = false
+            this.$message({
+              showClose: true,
+              message: '数据更新成功',
+              type: 'success'
+            });
+            this.editdialogVisible = false
 
+          }).catch(err => {
+          console.log(err);
+          this.loading = false
+          this.$message({
+            showClose: true,
+            message: '请求数据错误',
+            type: 'error'
+          });
+
+        })
+      },
+      delConfirm(){
+        this.loading = true;
+        Api.delShufflingGood(this.delData.id)
+          .then(data => {
+            this.loading = false
+            this.$message({
+              showClose: true,
+              message: '数据删除成功',
+              type: 'success'
+            });
+            this.delDialogVisible = false
+
+          }).catch(err => {
+          console.log(err);
+          this.loading = false
+          this.$message({
+            showClose: true,
+            message: '请求数据错误',
+            type: 'error'
+          });
+
+        })
+      }
     }
   }
 </script>
