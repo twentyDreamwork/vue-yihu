@@ -1,6 +1,8 @@
 <template>
   <div>
-    <el-button @click="handleAdd">添加</el-button>
+    <div style="margin-bottom: 8px; width: 100%; background-color: white; padding: 8px;">
+      <el-button type="primary" size="mini" @click="handleAdd">添加</el-button>
+    </div>
 
     <el-table
       :data="tableData.list"
@@ -8,7 +10,7 @@
       style="width: 100%">
       <el-table-column
         label="创建日期"
-        width="200">
+        width="200" align="center">
         <template slot-scope="scope">
           <i class="el-icon-time"></i>
           <span style="margin-left: 10px">{{ scope.row.createdAt }}</span>
@@ -17,14 +19,14 @@
       <el-table-column
         prop="imgPath"
         label="图片路径"
-        width="300">
+        width="300" align="center">
         <template slot-scope="scope">
           <img :src="scope.row.goodsImg" alt="" style="width: 256px;height: 102px">
         </template>
       </el-table-column>
       <el-table-column
         label="淘宝地址"
-        width="350">
+        width="350" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.contents }}</span>
         </template>
@@ -32,7 +34,7 @@
       <el-table-column
         prop="tag"
         label="商品状态"
-        width="100">
+        width="100" align="center">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.type === '1' ? 'primary' : 'success'"
@@ -41,24 +43,23 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="备注"
-        width="350">
+        label="描述"
+        width="350" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.remark }}</span>
         </template>
       </el-table-column>
       <el-table-column fixed="right"
                        label="操作"
-                       width="100">
+                       width="180" align="center">
         <template slot-scope="scope">
           <el-button
-            size="mini"
-            type="text"
+            type="primary" size="mini"
             @click="handleEdit(scope.$index, scope.row)">编辑
           </el-button>
           <el-button
             size="mini"
-            type="text"
+            type="danger"
             @click="handleDelete(scope.$index, scope.row)">删除
           </el-button>
         </template>
@@ -71,28 +72,85 @@
                      layout="total, sizes, prev, pager, next, jumper" :total="tableData.total">
       </el-pagination>
     </div>
-    <el-dialog :visible.sync="editdialogVisible"
-                           title="编辑"
-                           append-to-body>
-    <div class="dialog-content">
-      <el-form v-if="currentEdit"
-               label-width="100px">
+    <el-dialog :visible.sync="editDialogVisible"
+               title="编辑"
+               append-to-body>
+      <div class="dialog-content">
+        <el-form v-if="currentEdit"
+                 label-width="100px">
 
-        <el-form-item label="淘宝地址">
-          <el-input v-model="currentEdit.contents"
-                    placeholder="请输入淘宝地址">
-          </el-input>
-        </el-form-item>
+          <el-form-item label="淘宝地址">
+            <el-input v-model="currentEdit.contents"
+                      placeholder="请输入淘宝地址">
+            </el-input>
+          </el-form-item>
 
-        <el-form-item label="备注">
-          <el-input v-model="currentEdit.remark"
-                    type="textarea"
-                    placeholder="请输入备注">
-          </el-input>
+          <el-form-item label="描述">
+            <el-input v-model="currentEdit.remark"
+                      type="textarea"
+                      placeholder="请输入描述">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="修改状态">
+            <el-select
+              v-model="stateValue"
+              clearable
+              placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+
+        </el-form>
+      </div>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="editDialogVisible  = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="editConfirm">确 定
+        </el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="delDialogVisible"
+      width="30%">
+      <span>确认删除？</span>
+      <span slot="footer" class="dialog-footer">
+       <el-button @click="delDialogVisible = false">取 消</el-button>
+       <el-button type="primary" @click="delConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog :visible.sync="addDialogVisible"
+               title="添加轮播信息"
+               append-to-body width="570px">
+      <el-form ref="form" :model="uploadData" label-width="80px">
+        <el-form-item label="图片选择" prop="goodsImg">
+          <el-upload
+            :on-preview="handlePictureCardPreview"
+            :on-remove="handleRemove"
+            :on-success="handleAvatarSuccess"
+            :action="fileUploadUrl"
+            list-type="picture-card" :limit="1">
+            <i class="el-icon-plus"/>
+          </el-upload>
+          <img :src="uploadData.goodsImg" width="100%" alt="" v-show="false">
         </el-form-item>
-        <el-form-item label="修改状态">
+        <el-form-item label="淘宝链接" prop="contents">
+          <el-input v-model="uploadData.contents"/>
+        </el-form-item>
+        <el-form-item label="商品描述" prop="remark">
+          <el-input v-model="uploadData.remark"/>
+        </el-form-item>
+        <el-form-item label="商品状态">
           <el-select
-            v-model="stateValue"
+            v-model="uploadData.type"
             clearable
             placeholder="请选择">
             <el-option
@@ -104,41 +162,13 @@
           </el-select>
         </el-form-item>
 
+
       </el-form>
-    </div>
-    <div slot="footer"
-         class="dialog-footer">
-      <el-button @click="dialogVisible = false">取 消</el-button>
-      <el-button type="primary"
-                 @click="editConfirm">确 定
-      </el-button>
-    </div>
-  </el-dialog>
-
-    <el-dialog :visible.sync="addDialogVisible"
-               title="添加"
-               append-to-body>
-      <div class="dialog-content">
-
+      <div slot="footer" class="dialog-footer">
+        <el-button type="text" @click="addDialogVisible=false">取消</el-button>
+        <el-button :loading="loading" type="primary" @click="addConfirm">确认</el-button>
       </div>
-      <div slot="footer"
-           class="dialog-footer">
-        <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary"
-                   @click="addConfirm">确 定
-        </el-button>
-      </div>
-    </el-dialog>
 
-    <el-dialog
-      title="提示"
-      :visible.sync="delDialogVisible"
-      width="30%">
-      <span>确认删除？</span>
-      <span slot="footer" class="dialog-footer">
-    <el-button @click="delDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="delConfirm">确 定</el-button>
-  </span>
     </el-dialog>
   </div>
 </template>
@@ -156,9 +186,9 @@
           page: 1 // 每页的数据条数
         },
         currentEdit: null,
-        editdialogVisible: false,
-        addDialogVisible:false,
-        delDialogVisible:false,
+        editDialogVisible: false,
+        addDialogVisible: false,
+        delDialogVisible: false,
         options: [{
           value: '0',
           label: '下架'
@@ -167,7 +197,14 @@
           label: '上架'
         }],
         stateValue: [],
-        delData:[]
+        delData: [],
+        fileUploadUrl: Api.baseUrl + '/upload/fileUpload',
+        uploadData: {
+          contents: "",
+          remark: "",
+          goodsImg: "",
+          type: ""
+        }
       }
     },
     created() {
@@ -193,17 +230,17 @@
 
       },
       handleAdd() {
-        alert("点击了添加")
+        this.addDialogVisible = true
       },
       handleEdit(index, row) {
         console.log(index, row);
         this.currentEdit = row
-        this.editdialogVisible = true
+        this.editDialogVisible = true
         console.log("点击了编辑")
       },
       handleDelete(index, row) {
         console.log(index, row);
-        this.delDialogVisible=true
+        this.delDialogVisible = true
         this.delData = row;
         console.log("点击了删除")
 
@@ -217,30 +254,6 @@
         this.pages = val;
         this.createData(this.pages, this.page)
       },
-      addConfirm() {
-        this.currentEdit.type = this.stateValue;
-        this.loading = true;
-        Api.updateShufflingGood(this.currentEdit)
-          .then(data => {
-            this.loading = false
-            this.$message({
-              showClose: true,
-              message: '数据更新成功',
-              type: 'success'
-            });
-            this.editdialogVisible = false
-
-          }).catch(err => {
-          console.log(err);
-          this.loading = false
-          this.$message({
-            showClose: true,
-            message: '请求数据错误',
-            type: 'error'
-          });
-
-        })
-      },
       editConfirm() {
         this.currentEdit.type = this.stateValue;
         this.loading = true;
@@ -252,7 +265,7 @@
               message: '数据更新成功',
               type: 'success'
             });
-            this.editdialogVisible = false
+            this.editDialogVisible = false
 
           }).catch(err => {
           console.log(err);
@@ -265,7 +278,7 @@
 
         })
       },
-      delConfirm(){
+      delConfirm() {
         this.loading = true;
         Api.delShufflingGood(this.delData.id)
           .then(data => {
@@ -276,6 +289,7 @@
               type: 'success'
             });
             this.delDialogVisible = false
+            this.createData(this.pages, this.page)
 
           }).catch(err => {
           console.log(err);
@@ -287,7 +301,87 @@
           });
 
         })
+      },
+      addConfirm() {
+        if (this.uploadData.type == "") {
+          this.$message({
+            showClose: true,
+            message: '请选择商品状态',
+            type: 'warning'
+          });
+        } else {
+          this.loading = true;
+          Api.addShufflingGood(this.uploadData)
+            .then(data => {
+              this.loading = false
+              this.$message({
+                showClose: true,
+                message: '数据添加成功',
+                type: 'success'
+              });
+              this.addDialogVisible = false
+              this.createData(this.pages, this.page)
+
+            }).catch(err => {
+            console.log(err);
+            this.loading = false
+            this.$message({
+              showClose: true,
+              message: '添加数据错误',
+              type: 'error'
+            });
+
+          })
+        }
+      },
+      handleAvatarSuccess(res) {
+        console.log(res)
+
+      },
+      handleRemove(file, fileList) {
+        console.log(file, fileList)
+      },
+      handlePictureCardPreview(file) {
+        console.log(file.url)
+        // this.imageUrl = file.url
+        // this.dialogVisible = true
+      },
+      handleAvatarSuccess(res, file) {
+        if (res.code == 200) {
+          this.uploadData.goodsImg = res.result
+        }
+        console.log(this.uploadData)
+
       }
     }
   }
 </script>
+
+<style scoped>
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
+</style>

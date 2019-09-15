@@ -15,6 +15,10 @@ let Api = {
   delShufflingGood(data) {
     return Util._doDelPromise(Util.baseUrl + '/carouselInfo/delCarouselInfo/'+data)
   },
+  addShufflingGood(data) {
+    return Util._doPostPromise(Util.baseUrl + '/carouselInfo/createCarouselInfo',data)
+  },
+
 
 }
 
