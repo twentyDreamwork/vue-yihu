@@ -30,7 +30,7 @@ export default new Router({
         },
         {
           path: '/taobaoGoods',
-          component: resolve => require(['../components/page/taobao/TaobaoGoods.vue'], resolve),
+          component: resolve => require(['../components/page/taobao/index.vue'], resolve),
           meta: {
             title: '淘宝商品'
           }
@@ -58,7 +58,7 @@ export default new Router({
         },
         {
           path: '/userManagement',
-          component: resolve => require(['../components/page/UserManagement.vue'], resolve),
+          component: resolve => require(['../components/page/users/index.vue'], resolve),
           meta: {
             title: '用户管理'
           }
