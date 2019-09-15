@@ -23,16 +23,19 @@
     <el-dialog :visible.sync="editdialogVisible" title="添加与编辑" append-to-body>
       <div class="dialog-content">
         <el-form label-width="100px" :model="currentEdit">
-          <el-table-item label="选择类型">
-            <el-select v-model="currentEdit.classifyId" clearable placeholder="请选择">
+          <el-form-item label="商品类型">
+            <el-select
+              v-model="currentEdit.classifyId"
+              clearable
+              placeholder="请选择">
               <el-option
                 v-for="item in classAll"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                :key="item.id"
+                :label="item.classifyName"
+                :value="item.id">
               </el-option>
-            </el-select>
-          </el-table-item>
+          </el-select>
+        </el-form-item>
           <el-form-item label="商品名称">
             <el-input v-model="currentEdit.goodsName" placeholder="请输入商品名称" />
           </el-form-item>
