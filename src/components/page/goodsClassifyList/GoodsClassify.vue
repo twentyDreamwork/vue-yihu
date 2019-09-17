@@ -23,7 +23,10 @@
             :on-remove="handleRemove"
             :on-success="handleAvatarSuccess"
             :action="fileUploadUrl"
-            list-type="picture-card" :limit="1">
+            list-type="picture-card"
+            :limit="1"
+            :file-list="imgFilesList"
+          >
             <i class="el-icon-plus"/>
           </el-upload>
           <img :src="operationData.icons" width="100%" alt="" v-show="false">
@@ -86,7 +89,7 @@
 
             },
             {
-              prop: 'img',
+              prop: 'icons',
               label: '图标',
               align:'center',
               width:'120',
@@ -125,7 +128,8 @@
           icons: "",
           parentId:0
         },
-        delData: []
+        delData: [],
+        imgFilesList:[]
 
       }
     },
@@ -201,6 +205,9 @@
         this.dialogVisible=true
         this.operationRecord="edit"
         this.operationData = row
+        this.imgFilesList[0]={
+          "url":row.icons
+        }
         console.log(index, row)
 
 

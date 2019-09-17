@@ -10,7 +10,7 @@ import 'font-awesome/css/font-awesome.min.css'
 import './components/common/directives';
 import "babel-polyfill";
 import './assets/css/icon.css';
-
+import  './utils/requestService'
 
 
 Object.keys(filters).forEach(key => {
@@ -20,7 +20,9 @@ Object.keys(filters).forEach(key => {
 Vue.use(element);
 axios.interceptors.request.use(function (config) {  //配置发送请求的信息
   stores.dispatch('showLoading')
-
+  config.headers['Content-Type'] = 'application/json'
+  config.headers['Access-Control-Allow-Origin']="*"
+  config.headers['Access-Control-Allow-Methods']="PUT,POST,GET,DELETE,OPTIONS"
   return config;
 }, function (error) {
   return Promise.reject(error);
@@ -34,6 +36,7 @@ axios.interceptors.response.use(function (response) { //配置请求回来的信
 });
 
 Vue.prototype.$http = axios
+Vue.prototype.HOST='/api'
 Vue.prototype.$echarts = echarts
 
 

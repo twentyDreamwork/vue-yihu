@@ -87,7 +87,7 @@
               :on-success="handleAvatarSuccess"
               :action="fileUploadUrl"
               ref="upload"
-              list-type="picture-card" :limit="1">
+              list-type="picture-card" :limit="1" :file-list="imgFilesList">
               <i class="el-icon-plus"/>
             </el-upload>
             <img :src="currentEdit.goodsImg" width="100%" alt="" v-show="false">
@@ -110,7 +110,7 @@
     </el-dialog>
 
   </div>
-  
+
 </template>
 
 <script>
@@ -313,7 +313,8 @@
         }],
         value: '',
         imgUrl: '',
-        classAll: []
+        classAll: [],
+        imgFilesList:[]
       }
     },
     created () {
@@ -363,6 +364,9 @@
             });
           })
         this.currentEdit = row;
+        this.imgFilesList[0]={
+          "url":row.goodsImg
+        }
         this.editdialogVisible = true;
         this.dialogVisible=true;
       },

@@ -27,7 +27,10 @@
             :on-remove="handleRemove"
             :on-success="handleAvatarSuccess"
             :action="fileUploadUrl"
-            list-type="picture-card" :limit="1">
+            list-type="picture-card"
+            :limit="1"
+            :file-list="imgFilesList"
+           >
             <i class="el-icon-plus"/>
           </el-upload>
           <img :src="operationData.img" width="100%" alt="" v-show="false">
@@ -276,7 +279,8 @@
         }],
         operationRecord:"edit",//操作记录
         delDialogVisible: false,
-        delData: []
+        delData: [],
+        imgFilesList:[]
 
 
       }
@@ -318,6 +322,9 @@
       handleEdit (index, row) {
         console.log(index, row)
         this.operationData = row
+        this.imgFilesList[0]={
+          "url":row.img
+        }
         this.operationRecord = "edit"
         this.addDialogVisible = true
         console.log(this.operationData )

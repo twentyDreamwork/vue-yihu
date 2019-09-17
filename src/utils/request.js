@@ -16,6 +16,8 @@ service.interceptors.request.use(
     //   config.headers['Authorization'] = 'Bearer ' + getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
     // }
     config.headers['Content-Type'] = 'application/json'
+    config.headers['Access-Control-Allow-Origin']="*"
+    config.headers['Access-Control-Allow-Methods']="PUT,POST,GET,DELETE,OPTIONS"
     return config
   },
   error => {
