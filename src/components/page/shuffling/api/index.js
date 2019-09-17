@@ -6,7 +6,7 @@ let Api = {
   getShufflingGood(page,total) {
     return Util._doGetPromise(Util.baseUrl + '/carouselInfo/carouselInfoList', {
       page: page,
-      total: total
+      limit: total
     })
   },
   updateShufflingGood(data) {

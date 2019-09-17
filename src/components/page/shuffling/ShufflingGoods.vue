@@ -37,8 +37,8 @@
         width="100" align="center">
         <template slot-scope="scope">
           <el-tag
-            :type="scope.row.type === '1' ? 'primary' : 'success'"
-            disable-transitions>{{scope.row.type| goodsTypeFilter}}
+            :type="scope.row.status === '1' ? 'primary' : 'success'"
+            disable-transitions>{{scope.row.status| goodsTypeFilter}}
           </el-tag>
         </template>
       </el-table-column>
@@ -91,13 +91,26 @@
                       placeholder="请输入描述">
             </el-input>
           </el-form-item>
-          <el-form-item label="修改状态">
+          <el-form-item label="商品状态">
             <el-select
-              v-model="stateValue"
+              v-model="typeValue"
               clearable
               placeholder="请选择">
               <el-option
-                v-for="item in options"
+                v-for="item in typeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="跳转方式">
+            <el-select
+              v-model="statusValue"
+              clearable
+              placeholder="请选择">
+              <el-option
+                v-for="item in statusOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -151,11 +164,24 @@
         </el-form-item>
         <el-form-item label="商品状态">
           <el-select
-            v-model="uploadData.type"
+            v-model="uploadData.status"
             clearable
             placeholder="请选择">
             <el-option
-              v-for="item in options"
+              v-for="item in statusOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="跳转方式">
+          <el-select
+            v-model="typeValue"
+            clearable
+            placeholder="请选择">
+            <el-option
+              v-for="item in typeOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value">
@@ -190,21 +216,30 @@
         editDialogVisible: false,
         addDialogVisible: false,
         delDialogVisible: false,
-        options: [{
+        typeOptions: [{
+          value: '0',
+          label: '外链'
+        }, {
+          value: '1',
+          label: '内跳转'
+        }],
+        statusOptions: [{
           value: '0',
           label: '下架'
         }, {
           value: '1',
           label: '上架'
         }],
-        stateValue: [],
+        statusValue: [],
+        typeValue: [],
         delData: [],
         fileUploadUrl: Api.baseUrl + '/upload/fileUpload',
         uploadData: {
           contents: "",
           remark: "",
           goodsImg: "",
-          type: ""
+          type: "",
+          status:"",
         }
       }
     },
@@ -262,7 +297,8 @@
         this.createData(this.pages, this.page)
       },
       editConfirm() {
-        this.currentEdit.type = this.stateValue;
+        this.currentEdit.type = this.typeValue;
+        this.currentEdit.status = this.statusValue;
         this.loading = true;
         Api.updateShufflingGood(this.currentEdit)
           .then(data => {
