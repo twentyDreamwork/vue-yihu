@@ -93,11 +93,11 @@
           </el-form-item>
           <el-form-item label="商品状态">
             <el-select
-              v-model="typeValue"
+              v-model="statusValue"
               clearable
               placeholder="请选择">
               <el-option
-                v-for="item in typeOptions"
+                v-for="item in statusOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -106,11 +106,11 @@
           </el-form-item>
           <el-form-item label="跳转方式">
             <el-select
-              v-model="statusValue"
+              v-model="typeValue"
               clearable
               placeholder="请选择">
               <el-option
-                v-for="item in statusOptions"
+                v-for="item in typeOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">

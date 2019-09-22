@@ -140,6 +140,7 @@
       handleAdd(){
        this.dialogVisible=true
         this.operationRecord="add"
+        this.imgFilesList=[]
         this.operationData={
           classifyName: "",
           icons: "",

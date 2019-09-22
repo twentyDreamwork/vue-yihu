@@ -339,6 +339,7 @@
       handleAdd() {
         this.addDialogVisible = true
         this.operationRecord="add"
+        this.imgFilesList=[]
         this.operationData={
           channelName: "",
           img: "",

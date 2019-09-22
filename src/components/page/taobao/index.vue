@@ -331,6 +331,7 @@
         })
       },
       handleAdd() {
+        this.imgFilesList=[]
         // console.info("添加界面");
         // 获取类型
         Api.getGoodsClass()
@@ -345,7 +346,9 @@
               type: 'error'
             });
           })
-        this.currentEdit = {};
+        this.currentEdit = {
+          isShop: 1
+        };
         this.editdialogVisible = true;
       },
       handleEdit(index,row) {
@@ -364,6 +367,7 @@
             });
           })
         this.currentEdit = row;
+        console.log(row)
         this.imgFilesList[0]={
           "url":row.goodsImg
         }
