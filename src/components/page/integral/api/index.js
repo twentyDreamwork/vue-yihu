@@ -34,34 +34,26 @@ let Api = {
     })
   },
 
-  getGoodsInfo(page, total, param){
-    return Util._doGetPromise(Util.baseUrl + '/goodsInfo/goodsInfoList', {
+  getIntegralGoodsInfo(page, total, param){
+    return Util._doGetPromise(Util.baseUrl + '/itemPoint/itemPointList', {
       page: page,
       limit: total,
-      goodsName: param.goodsName,
-      classifyId: param.classifyId,
-      isShop: param.isShop
+      isShop: param.isShop,
+      itemName: param.itemName
+      
     })
   },
-  delGoodsById(data) {
-    return Util._doDelPromise(Util.baseUrl + '/goodsInfo/delGoodsInfo/'+data)
+  delIntegralGoodsById(data) {
+    return Util._doDelPromise(Util.baseUrl + '/itemPoint/delItemPoint/'+data)
   },
 
-  addGoodsInfo(result,data){
+  addIntegralGoodsInfo(result,data){
     if(result){
-      return Util._doPostPromise(Util.baseUrl + '/goodsInfo/updateGoodsInfo',data)
+      return Util._doPostPromise(Util.baseUrl + '/itemPoint/updateItemPoint',data)
     }else{
-      return Util._doPostPromise(Util.baseUrl + '/goodsInfo/createGoodslInfo',data)
+      return Util._doPostPromise(Util.baseUrl + '/itemPoint/createItemPoint',data)
     } 
   },
-
-  getGoodsClass(){
-    return Util._doGetPromise(Util.baseUrl + '/goodsInfo/goodsClassifyTree')
-  },
-
-  editGoodsIsShop(data){
-    return Util._doPostPromise(Util.baseUrl+ '/goodsInfo/GoodsInfolPublish',data)
-  }
 
 }
 
