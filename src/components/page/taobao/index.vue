@@ -1,13 +1,45 @@
 <template>
   <div class="app-container">
-    <div style="margin-bottom: 8px; width: 100%; background-color: white; padding: 8px;">
-      <el-button type="primary" size="mini" @click="handleAdd">添加</el-button>
+    <div style="margin-bottom: 8px; width: auto; background-color: white; padding: 8px;">
+      <el-form :inline="true" :model="param">
+        <el-form-item label="商品名称">
+          <el-input v-model="param.goodsName"/>
+        </el-form-item>
+        <el-form-item label="商品类型">
+            <el-select
+              v-model="param.classifyId"
+              clearable
+              placeholder="请选择">
+              <el-option
+                v-for="item in classAll"
+                :key="item.id"
+                :label="item.classifyName"
+                :value="item.id">
+              </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="param.isShop" placeholder="请选择">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="success" size="mini" @click="createData">查询</el-button>
+          <el-button type="primary" size="mini" @click="handleAdd">添加</el-button>
+        </el-form-item>
+      </el-form>
     </div>
     <lb-table v-loading="loading"
               :column="tableData.column"
               :data="tableData.data"
               pagination
               background
+              height="400"
               layout="total, sizes, prev, pager, next, jumper"
               border
               :page-sizes="[10, 20, 50, 100]"
@@ -151,16 +183,26 @@
               width: '180',
             },
             {
-              prop: 'goodsUrl',
-              label: '链接',
+              prop: 'isShop',
+              label: '状态',
               align: 'center',
-              width: '120',
+              width: '100',
+              render: (h, scope) => {
+                if (scope.row.isShop === 0) {
+                  return(<el-tag type='success' >下架</el-tag>)
+                } else {
+                  return(<el-tag type='primary' >上架</el-tag>)
+                }
+              }
             },
             {
-              prop: 'classifyName',
+              // prop: 'goodsClassify',
               label: '类型',
               align: 'center',
               width: '120',
+              render: (h,scope)=>{
+                  return(<el-tag>{scope.row.goodsClassify.classifyName}</el-tag>)
+              },
             },
             {
               prop: 'isCarousel',
@@ -233,16 +275,17 @@
               align: 'center',
             },
             {
-              prop: 'isShop',
-              label: '状态',
+              prop: 'goodsUrl',
+              label: '链接',
               align: 'center',
-              width: '100',
+              width: '120',
               render: (h, scope) => {
-                if (scope.row.isShop === 0) {
-                  return(<el-tag type='success' >下架</el-tag>)
-                } else {
-                  return(<el-tag type='primary' >上架</el-tag>)
-                }
+                
+                return (
+                  <el-tooltip class="item" effect="dark" content={scope.row.goodsUrl } placement="top-start">
+                    <el-button>查看链接</el-button>
+                  </el-tooltip>
+                )
               }
             },
             {
@@ -262,13 +305,15 @@
             {
             label: '操作',
             fixed: 'right',
-            width: '180',
+            width: '240',
             align: 'center',
             render: (h, scope) => {
               return (
                 <div>
+                  <el-button type={scope.row.isShop===0?"primary":"success"} size="mini" 
+                    onClick={ () => {this.handleEditIsShop(scope.$index, scope.row)}}>{scope.row.isShop===0?'上架':'下架'}</el-button>  
                   <el-button type="primary" size="mini"
-                        onClick={ () => { this.handleEdit(scope.$index, scope.row) } }>编辑</el-button>
+                    onClick={ () => { this.handleEdit(scope.$index, scope.row) } }>编辑</el-button>
                   <el-button
                     size="mini" type="danger"
                     onClick={ () => { this.handleDelete(scope.$index, scope.row) } }>删除</el-button>
@@ -281,7 +326,7 @@
         },
         loading: false,
         currentPage: 1,
-        pageSize: 5,
+        pageSize: 10,
         total: 0,
         currentEdit: {
           id: '',
@@ -314,7 +359,8 @@
         value: '',
         imgUrl: '',
         classAll: [],
-        imgFilesList:[]
+        imgFilesList:[],
+        param: {goodsName:null,classifyId:null,isShop:1}
       }
     },
     created () {
@@ -322,8 +368,25 @@
     },
     methods: {
       createData (length) {
-        Api.getGoodsInfo(this.currentPage,this.pageSize)
+        // 获取类型
+        Api.getGoodsClass()
+          .then(data =>{
+            // console.info(data.result);
+            this.classAll = data.result;
+          })
+          .catch(err => {
+            this.$message({
+              showClose: true,
+              message: '请求数据错误',
+              type: 'error'
+            });
+          });
+        if (this.param.classifyId===''){
+          this.param.classifyId=null
+        }
+        Api.getGoodsInfo(this.currentPage,this.pageSize, this.param)
           .then(data => {
+            // console.info(data);
             this.tableData.data = data.result.list;
             this.total = data.result.total;
           }).catch(err => {
@@ -344,16 +407,19 @@
               message: '请求数据错误',
               type: 'error'
             });
-          })
-        this.currentEdit = {};
+          });
+        this.imgUrl='';
+        this.imgFilesList=[];
+        this.currentEdit = {isCarousel: 1,isHot: 1,isRecommend: 1, isTime: 0, isShop: 1};
         this.editdialogVisible = true;
+        this.dialogVisible=false;
       },
       handleEdit(index,row) {
-        // console.log(row);
+        // console.log(row.goodsClassify);
         // 获取类型
         Api.getGoodsClass()
           .then(data =>{
-            console.info(data.result);
+            // console.info(data.result);
             this.classAll = data.result;
           })
           .catch(err => {
@@ -362,10 +428,14 @@
               message: '请求数据错误',
               type: 'error'
             });
-          })
+          });
         this.currentEdit = row;
-        this.imgFilesList[0]={
-          "url":row.goodsImg
+        if (row.goodsImg !=null){
+          this.imgFilesList=[{
+            "url": row.goodsImg
+          }];
+        }else{
+          this.imgFilesList=[];
         }
         this.editdialogVisible = true;
         this.dialogVisible=true;
@@ -423,6 +493,30 @@
                 type: 'error'
               });
             })
+      },
+      handleEditIsShop(index,row){
+        if (row.isShop==0){
+          this.currentEdit={id: row.id, isShop: 1};
+        }else{
+          this.currentEdit={id: row.id, isShop: 0};
+        }
+        Api.editGoodsIsShop(this.currentEdit)
+           .then(data => {
+             this.loading = false;
+              this.$message({
+                showClose: true,
+                message: '操作成功',
+                type: 'success'
+              });
+              this.createData(this.pages, this.page);
+            }).catch(err => {
+              this.loading = false
+              this.$message({
+                showClose: true,
+                message: '添加数据错误',
+                type: 'error'
+              });
+            });
       },
       handleSizeChange (val) {
         this.currentPage = 1
