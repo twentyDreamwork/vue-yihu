@@ -8,7 +8,6 @@
               border
               row-key="id"
               border
-              default-expand-all
               :tree-props="{children: 'childs', hasChildren: false}">
     </lb-table>
 
@@ -42,6 +41,9 @@
             :props="{ checkStrictly: true }"
             clearable  @change="handleChange" :show-all-levels="false">
           </el-cascader>
+        </el-form-item>
+        <el-form-item label="优先级" prop="priority">
+          <el-input v-model="operationData.priority"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -93,6 +95,13 @@
               }
             },
             {
+              prop: 'priority',
+              label: '优先级',
+              align:'center',
+              width:'200',
+
+            },
+            {
               label: '操作',
               width:'180',
               render: (h, scope) => {
@@ -122,7 +131,8 @@
         operationData: {
           classifyName: "",
           icons: "",
-          parentId:0
+          parentId:0,
+          priority:0
         },
         delData: [],
         imgFilesList:[],
@@ -296,3 +306,8 @@
     }
   }
 </script>
+
+<style scoped>
+
+
+</style>

@@ -439,6 +439,7 @@
         // console.log(row.goodsClassify);
         this.currentEdit = row;
         this.classifyModel=[];
+        this.imgUrl='';
         console.log(row)
         if (row.goodsImg !=null){
           this.imgFilesList=[{

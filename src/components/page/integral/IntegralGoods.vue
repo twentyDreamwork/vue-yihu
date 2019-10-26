@@ -48,6 +48,7 @@
           <el-form-item label="商品内容">
             <el-input v-model="currentEdit.itemContent" type="textarea" placeholder="请输入内容描述"/>
           </el-form-item>
+
           <el-form-item label="兑换积分">
             <el-input v-model="currentEdit.point" />
           </el-form-item>
@@ -181,7 +182,7 @@
             render: (h, scope) => {
               return (
                 <div>
-                  <el-button type={scope.row.isShop===0?"primary":"success"} size="mini" 
+                  <el-button type={scope.row.isShop===0?"primary":"success"} size="mini"
                     onClick={ () => {this.handleEditIsShop(scope.$index, scope.row)}}>{scope.row.isShop===0?'上架':'下架'}</el-button>
                   <el-button type="primary" size="mini"
                     onClick={ () => { this.handleEdit(scope.$index, scope.row) } }>编辑</el-button>
@@ -223,7 +224,8 @@
         value: '',
         imgUrl: '',
         imgFilesList:[],
-        param: {itemName:null,isShop:1}
+        param: {itemName:null,isShop:1},
+
       }
     },
     created () {
@@ -255,7 +257,7 @@
           }];
         }else{
           this.imgFilesList=[];
-        } 
+        }
         this.currentEdit = row;
         this.editdialogVisible = true;
         this.dialogVisible=true;
