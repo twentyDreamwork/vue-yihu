@@ -408,17 +408,10 @@
               message: '请求数据错误',
               type: 'error'
             });
-<<<<<<< HEAD
-          })
-        this.currentEdit = {
-          isShop: 1
-        };
-=======
           });
         this.imgUrl='';
         this.imgFilesList=[];
         this.currentEdit = {isCarousel: 1,isHot: 1,isRecommend: 1, isTime: 0, isShop: 1};
->>>>>>> fae8a581ae4544af4fde3d7455f0a1837179b9da
         this.editdialogVisible = true;
         this.dialogVisible=false;
       },
@@ -438,18 +431,12 @@
             });
           });
         this.currentEdit = row;
-<<<<<<< HEAD
-        console.log(row)
-        this.imgFilesList[0]={
-          "url":row.goodsImg
-=======
         if (row.goodsImg !=null){
           this.imgFilesList=[{
             "url": row.goodsImg
           }];
         }else{
           this.imgFilesList=[];
->>>>>>> fae8a581ae4544af4fde3d7455f0a1837179b9da
         }
         this.editdialogVisible = true;
         this.dialogVisible=true;

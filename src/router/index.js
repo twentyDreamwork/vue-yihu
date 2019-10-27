@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import { resolve } from 'path';
 
 Vue.use(Router);
 
@@ -61,6 +62,20 @@ export default new Router({
           component: resolve => require(['../components/page/users/index.vue'], resolve),
           meta: {
             title: '用户管理'
+          }
+        },
+        {
+          path: '/userSpread',
+          component: resolve => require(['../components/page/userSpread/index.vue'], resolve),
+          meta: {
+            title: '用户推广'
+          }
+        },
+        {
+          path: '/second',
+          component: resolve => require(['../components/page/userSpread/second.vue'], resolve),
+          meta: {
+            title: '用户推广详情'
           }
         },
         {

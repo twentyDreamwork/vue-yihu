@@ -6,8 +6,7 @@
     <lb-table :column="tableData.column"
               :data="tableData.data"
               border
-              row-key="id"
-              border
+              row-key='id'
               default-expand-all
               :tree-props="{children: 'childs', hasChildren: false}">
     </lb-table>
@@ -85,8 +84,7 @@
               prop: 'classifyName',
               label: '分类名称',
               align:'center',
-              width:'200',
-
+              width:'200'
             },
             {
               prop: 'icons',
@@ -152,11 +150,11 @@
         Api.getGoodsClassifyList()
           .then(data => {
             this.loading = false
-            console.log(data.result);
+            // console.log(data.result);
             this.tableData.data = data.result
             console.log(data);
           }).catch(err => {
-          console.log(err);
+          //console.log(err);
           this.loading = false
           this.$message({
             showClose: true,
@@ -179,7 +177,7 @@
               this.dialogVisible = false
               this.createData()
             }).catch(err => {
-            console.log(err);
+            // console.log(err);
             this.loading = false
             this.$message({
               showClose: true,
@@ -199,7 +197,7 @@
         }
       },
       handlePictureCardPreview(file) {
-        console.log(file.url)
+        // console.log(file.url)
 
       },
       handleEdit (index, row) {
@@ -209,12 +207,12 @@
         this.imgFilesList[0]={
           "url":row.icons
         }
-        console.log(index, row)
+        // console.log(index, row)
 
 
       },
       handleDelete (index, row) {
-        console.log(index, row)
+        // console.log(index, row)
         this.delDialogVisible = true
         this.delData = row;
       },
@@ -232,7 +230,7 @@
             this.createData()
 
           }).catch(err => {
-          console.log(err);
+          // console.log(err);
           this.loading = false
           this.$message({
             showClose: true,

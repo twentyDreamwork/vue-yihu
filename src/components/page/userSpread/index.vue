@@ -1,5 +1,15 @@
 <template>
   <div class="app-container">
+    <div style="margin-bottom: 8px; width: auto; background-color: white; padding: 8px;">
+      <el-form :inline="true" :model="param">
+        <el-form-item label="账号名称">
+          <el-input v-model="param.userName"/>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="success" size="mini" @click="createData">查询</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
     <lb-table v-loading="loading"
               :column="tableData.column"
               :data="tableData.data"
@@ -36,69 +46,35 @@
               align: 'center'
             },
             {
-              prop: 'avatar',
-              label: '头像',
+              prop: 'userAvatar',
+              label: '用户头像',
               render(h, scope){
-                 return(<img src={ scope.row.avatar } width='24' height='24'/>)
+                 return(<img src={ scope.row.userAvatar } width='20' height='20'/>)
               }
-            },
-            {
-              prop: 'accountName',
-              label: '账号名称'
             },
             {
               prop: 'userName',
-              label: '用户名称'
-            },
-            {
-              prop: 'nickName',
-              label: '昵称'
-            },
-            {
-              prop: 'points',
-              label: '积分',
+              label: '用户账号'
               
             },
             {
-              prop: 'email',
-              label: '邮箱号'
+              prop: 'userPoints',
+              label: '积分'
             },
             {
-              prop: 'platforms',
-              label: '平台',
-              render: (h, scope) => {
-                if (scope.row.platforms === 0) {
-                  return(<el-tag type='success' >安卓</el-tag>)
-                } else {
-                  return(<el-tag type='primary' >苹果</el-tag>)
-                }
-              }
+                prop: 'oneLevelNum',
+                label: '一级'
             },
             {
-              prop: 'invite',
-              label: '邀请码'
+                prop: 'secondLevelNum',
+                label: '二级'
+
             },
             {
-              prop: 'status',
-              label: '状态',
-              render: (h, scope) => {
-                if (scope.row.status === 0) {
-                  return(<el-tag type='success' >正常</el-tag>)
-                } else {
-                  return(<el-tag type='primary' >黑名单</el-tag>)
-                }
-              }
-            },
-            {
-              prop: 'createdAt',
-              label: '创建日期',
-              render: (h, scope) => {
-                return (
-                  <div align="left">
-                    <i class="el-icon-time"></i>
-                    <span style="margin-left: 10px">{ scope.row.createdAt }</span>
-                  </div>
-                )
+                //prop: 'userId',
+                label: '操作',
+                render: (h, scope) => {
+                 return(<el-button type="success" size="mini" onClick={ () => { this.findSecondsByUserId(scope.$index, scope.row) }}>推广详细</el-button>)
               }
             }
           ],
@@ -108,6 +84,7 @@
         currentPage: 1,
         pageSize: 10,
         total: 0,
+        param: {userName:null}
       }
     },
     created () {
@@ -115,13 +92,17 @@
     },
     methods: {
       createData (length) {
-        Api.getUsers(this.currentPage,this.pageSize)
+        Api.getUserSpread(this.currentPage,this.pageSize,this.param)
           .then(data => {
             this.tableData.data = data.result.list;
             this.total = data.result.total;
           }).catch(err => {
 
         })
+      },
+      findSecondsByUserId(index, val){
+          //console.info(val.userId);
+          this.$router.push({path:"/second", query: {id: val.userId}});
       },
       handleSizeChange (val) {
         this.currentPage = 1

@@ -89,6 +89,10 @@ export default {
               title: '用户管理'
             },
             {
+              index: 'userSpread',
+              title: '用户推广'
+            },
+            {
               index: 'staffManagement',
               title: '员工管理'
             },
