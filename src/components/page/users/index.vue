@@ -57,7 +57,7 @@
             {
               prop: 'points',
               label: '积分',
-              
+
             },
             {
               prop: 'email',
@@ -67,7 +67,7 @@
               prop: 'platforms',
               label: '平台',
               render: (h, scope) => {
-                if (scope.row.platforms === 0) {
+                if (scope.row.platforms === 1) {
                   return(<el-tag type='success' >安卓</el-tag>)
                 } else {
                   return(<el-tag type='primary' >苹果</el-tag>)

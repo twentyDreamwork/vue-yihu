@@ -6,17 +6,13 @@
           <el-input v-model="param.goodsName"/>
         </el-form-item>
         <el-form-item label="商品类型">
-            <el-select
-              v-model="param.classifyId"
-              clearable
-              placeholder="请选择">
-              <el-option
-                v-for="item in classAll"
-                :key="item.id"
-                :label="item.classifyName"
-                :value="item.id">
-              </el-option>
-          </el-select>
+          <el-cascader
+            :options="classifyOptions"
+            v-model="classifyModel"
+            :props="{ checkStrictly: true }"
+            clearable  @change="handleChange" :show-all-levels="false">
+          </el-cascader>
+
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="param.isShop" placeholder="请选择">
@@ -56,17 +52,12 @@
       <div class="dialog-content">
         <el-form label-width="100px" :model="currentEdit">
           <el-form-item label="商品类型">
-            <el-select
-              v-model="currentEdit.classifyId"
-              clearable
-              placeholder="请选择">
-              <el-option
-                v-for="item in classAll"
-                :key="item.id"
-                :label="item.classifyName"
-                :value="item.id">
-              </el-option>
-          </el-select>
+            <el-cascader
+              :options="classifyOptions"
+              v-model="classifyModel"
+              :props="{ checkStrictly: true }"
+              clearable  @change="handleChange" :show-all-levels="false">
+            </el-cascader>
         </el-form-item>
           <el-form-item label="商品名称">
             <el-input v-model="currentEdit.goodsName" placeholder="请输入商品名称" />
@@ -280,7 +271,7 @@
               align: 'center',
               width: '120',
               render: (h, scope) => {
-                
+
                 return (
                   <el-tooltip class="item" effect="dark" content={scope.row.goodsUrl } placement="top-start">
                     <el-button>查看链接</el-button>
@@ -310,8 +301,8 @@
             render: (h, scope) => {
               return (
                 <div>
-                  <el-button type={scope.row.isShop===0?"primary":"success"} size="mini" 
-                    onClick={ () => {this.handleEditIsShop(scope.$index, scope.row)}}>{scope.row.isShop===0?'上架':'下架'}</el-button>  
+                  <el-button type={scope.row.isShop===0?"primary":"success"} size="mini"
+                    onClick={ () => {this.handleEditIsShop(scope.$index, scope.row)}}>{scope.row.isShop===0?'上架':'下架'}</el-button>
                   <el-button type="primary" size="mini"
                     onClick={ () => { this.handleEdit(scope.$index, scope.row) } }>编辑</el-button>
                   <el-button
@@ -360,13 +351,37 @@
         imgUrl: '',
         classAll: [],
         imgFilesList:[],
-        param: {goodsName:null,classifyId:null,isShop:1}
+        param: {goodsName:null,classifyId:null,isShop:1},
+        classifyOptions: [
+          {
+            value: '0',
+            label: '一级分类',
+            children: []
+          }
+        ],
+        classifyModel:[],
       }
     },
     created () {
       this.createData(this.pageSize)
+      this.getType()
     },
     methods: {
+      getType(){
+        // 获取类型
+        Api.getGoodsClass()
+          .then(data =>{
+            this.classifyToModel(data.result);
+
+          })
+          .catch(err => {
+            this.$message({
+              showClose: true,
+              message: '请求数据错误',
+              type: 'error'
+            });
+          });
+      },
       createData (length) {
         // 获取类型
         Api.getGoodsClass()
@@ -395,6 +410,7 @@
       },
       handleAdd() {
         this.imgFilesList=[]
+        this.classifyModel=[]
         // console.info("添加界面");
         // 获取类型
         Api.getGoodsClass()
@@ -408,7 +424,11 @@
               message: '请求数据错误',
               type: 'error'
             });
-          });
+
+          })
+        this.currentEdit = {
+          isShop: 1
+        };
         this.imgUrl='';
         this.imgFilesList=[];
         this.currentEdit = {isCarousel: 1,isHot: 1,isRecommend: 1, isTime: 0, isShop: 1};
@@ -417,20 +437,10 @@
       },
       handleEdit(index,row) {
         // console.log(row.goodsClassify);
-        // 获取类型
-        Api.getGoodsClass()
-          .then(data =>{
-            // console.info(data.result);
-            this.classAll = data.result;
-          })
-          .catch(err => {
-            this.$message({
-              showClose: true,
-              message: '请求数据错误',
-              type: 'error'
-            });
-          });
         this.currentEdit = row;
+        this.classifyModel=[];
+        this.imgUrl='';
+        console.log(row)
         if (row.goodsImg !=null){
           this.imgFilesList=[{
             "url": row.goodsImg
@@ -459,6 +469,7 @@
               type: 'success'
             });
             this.delDialogVisible = false
+            this.param.classifyId=null
             this.createData(this.pages, this.page)
 
           }).catch(err => {
@@ -476,6 +487,7 @@
         if (this.imgUrl != ''){
             this.currentEdit.goodsImg = this.imgUrl;
         }
+        this.param.classifyId=null
         Api.addGoodsInfo(this.dialogVisible,this.currentEdit)
           .then(data => {
               this.loading = false;
@@ -539,7 +551,49 @@
           // this.currentEdit.goodsImg = res.result;
           this.imgUrl = res.result;
         }
-      }
+      },
+      classifyToModel(data){
+        for(var val of data){
+          var object ={
+            value:0,
+            label:"",
+            children:[]
+          }
+          object.value=val.id
+          object.label=val.classifyName
+          if(val.childs!=null){
+            for(var child of val.childs){
+              var children ={
+                value:0,
+                label:"",
+                children:[]
+              }
+              children.value=child.id
+              children.label=child.classifyName
+              object.children.push(children)
+              if(child.childs!=null){
+                for(var nextChild of child.childs){
+                  var nextChildren ={
+                    value:0,
+                    label:"",
+                    children:[]
+                  }
+                  nextChildren.value=nextChild.id
+                  nextChildren.label=nextChild.classifyName
+                  children.children.push(nextChildren)
+
+                }
+              }
+            }
+          }
+          this.classifyOptions[0].children.push(object);
+
+        }
+      },
+      handleChange(value){
+        this.currentEdit.classifyId = value[value.length-1]
+        this.param.classifyId = value[value.length-1]
+      },
     }
   }
 </script>

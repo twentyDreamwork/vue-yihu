@@ -6,7 +6,9 @@ let Api = {
   getGoodsClassifyList(page,total) {
     return Util._doGetPromise(Util.baseUrl + '/goodsInfo/goodsClassifyTree', {
       page: page,
-      total: total
+      total: total,
+      sidx:"priority",
+      order:"desc"
     })
   },
   updateGoodsClassify(data,isEdit) {

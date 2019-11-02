@@ -6,8 +6,13 @@
     <lb-table :column="tableData.column"
               :data="tableData.data"
               border
+<<<<<<< HEAD
               row-key='id'
               default-expand-all
+=======
+              row-key="id"
+              border
+>>>>>>> accd38a54980a6b114ffa52ec43ec0f83e2038e0
               :tree-props="{children: 'childs', hasChildren: false}">
     </lb-table>
 
@@ -35,17 +40,15 @@
           <el-input v-model="operationData.classifyName"/>
         </el-form-item>
         <el-form-item label="上级分类">
-          <el-select
-            v-model="operationData.parentId"
-            clearable
-            placeholder="默认为一级分类">
-            <el-option
-              v-for="item in tableData.data"
-              :key="item.id"
-              :label="item.classifyName"
-              :value="item.id">
-            </el-option>
-          </el-select>
+          <el-cascader
+            :options="classifyOptions"
+            v-model="classifyModel"
+            :props="{ checkStrictly: true }"
+            clearable  @change="handleChange" :show-all-levels="false">
+          </el-cascader>
+        </el-form-item>
+        <el-form-item label="优先级" prop="priority">
+          <el-input v-model="operationData.priority"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -96,6 +99,13 @@
               }
             },
             {
+              prop: 'priority',
+              label: '优先级',
+              align:'center',
+              width:'200',
+
+            },
+            {
               label: '操作',
               width:'180',
               render: (h, scope) => {
@@ -117,6 +127,7 @@
           ],
           data: []
         },
+        classifyModel:[],
         fileUploadUrl: Api.baseUrl + '/upload/fileUpload',
         operationRecord:"edit",//操作记录
         dialogVisible: false,
@@ -124,10 +135,18 @@
         operationData: {
           classifyName: "",
           icons: "",
-          parentId:0
+          parentId:0,
+          priority:0
         },
         delData: [],
-        imgFilesList:[]
+        imgFilesList:[],
+        classifyOptions: [
+          {
+            value: '0',
+            label: '一级分类',
+            children: []
+          }
+        ]
 
       }
     },
@@ -136,8 +155,10 @@
     },
     methods: {
       handleAdd(){
-       this.dialogVisible=true
+        this.classifyModel=null
+        this.dialogVisible=true
         this.operationRecord="add"
+        this.operationData.parentId="0"
         this.imgFilesList=[]
         this.operationData={
           classifyName: "",
@@ -152,6 +173,9 @@
             this.loading = false
             // console.log(data.result);
             this.tableData.data = data.result
+            this.classifyOptions[0].children=[]
+            this.classifyToModel(this.tableData.data);
+
             console.log(data);
           }).catch(err => {
           //console.log(err);
@@ -239,7 +263,55 @@
           });
 
         })
+      },
+      handleChange(value){
+        this.operationData.parentId = value[value.length-1]
+      },
+      classifyToModel(data){
+        for(var val of data){
+          var object ={
+            value:0,
+            label:"",
+            children:[]
+          }
+          object.value=val.id
+          object.label=val.classifyName
+          if(val.childs!=null){
+            for(var child of val.childs){
+              var children ={
+                value:0,
+                label:"",
+                children:[]
+              }
+              children.value=child.id
+              children.label=child.classifyName
+              object.children.push(children)
+              if(child.childs!=null){
+                for(var nextChild of child.childs){
+                  var nextChildren ={
+                    value:0,
+                    label:"",
+                    children:[]
+                  }
+                  nextChildren.value=nextChild.id
+                  nextChildren.label=nextChild.classifyName
+                  children.children.push(nextChildren)
+
+                }
+              }
+            }
+          }
+          this.classifyOptions[0].children.push(object);
+
+        }
       }
+
+
     }
   }
 </script>
+
+<style scoped>
+
+
+</style>
