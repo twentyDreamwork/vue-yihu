@@ -6,13 +6,7 @@
     <lb-table :column="tableData.column"
               :data="tableData.data"
               border
-<<<<<<< HEAD
-              row-key='id'
-              default-expand-all
-=======
               row-key="id"
-              border
->>>>>>> accd38a54980a6b114ffa52ec43ec0f83e2038e0
               :tree-props="{children: 'childs', hasChildren: false}">
     </lb-table>
 
