@@ -40,7 +40,7 @@ let Api = {
       limit: total,
       isShop: param.isShop,
       itemName: param.itemName
-      
+
     })
   },
   delIntegralGoodsById(data) {
@@ -52,8 +52,29 @@ let Api = {
       return Util._doPostPromise(Util.baseUrl + '/itemPoint/updateItemPoint',data)
     }else{
       return Util._doPostPromise(Util.baseUrl + '/itemPoint/createItemPoint',data)
-    } 
+    }
   },
+  createProductAttrCate(url, params) {
+    return new Promise((resolve, reject) => {
+      vm.$http.get(url, {
+        params: params
+      }).then(res => {
+        resolve(res.data)
+      }, res => {
+        // error callback
+        reject(res)
+        console.log('error: ', res)
+      })
+    })
+  },
+  getItemPointInfo(id){
+    return Util._doGetPromise(Util.baseUrl + '/itemPoint/ItemPointInfo/'+id, {
+    })
+  },
+  updateItemPointInfoReq(data){
+    return Util._doPostPromise(Util.baseUrl + '/itemPoint/updateItemPointInfoReq',data)
+
+  }
 
 }
 

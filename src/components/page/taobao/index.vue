@@ -35,7 +35,6 @@
               :data="tableData.data"
               pagination
               background
-              height="400"
               layout="total, sizes, prev, pager, next, jumper"
               border
               :page-sizes="[10, 20, 50, 100]"
@@ -62,9 +61,9 @@
           <el-form-item label="商品名称">
             <el-input v-model="currentEdit.goodsName" placeholder="请输入商品名称" />
           </el-form-item>
-          <el-form-item label="商品内容">
-            <el-input v-model="currentEdit.goodsContent" type="textarea" placeholder="请输入内容描述"/>
-          </el-form-item>
+<!--          <el-form-item label="商品内容">-->
+<!--            <el-input v-model="currentEdit.goodsContent" type="textarea" placeholder="请输入内容描述"/>-->
+<!--          </el-form-item>-->
           <el-form-item label="商品链接">
             <el-input v-model="currentEdit.goodsUrl" type="textarea" placeholder="请输入商品链接"/>
           </el-form-item>
@@ -88,10 +87,10 @@
             <el-radio v-model="currentEdit.isHot" :label="0">否</el-radio>
             <el-radio v-model="currentEdit.isHot" :label="1">是</el-radio>
           </el-form-item>
-          <el-form-item label="轮播商品">
-            <el-radio v-model="currentEdit.isCarousel" :label="0">否</el-radio>
-            <el-radio v-model="currentEdit.isCarousel" :label="1">是</el-radio>
-          </el-form-item>
+<!--          <el-form-item label="轮播商品">-->
+<!--            <el-radio v-model="currentEdit.isCarousel" :label="0">否</el-radio>-->
+<!--            <el-radio v-model="currentEdit.isCarousel" :label="1">是</el-radio>-->
+<!--          </el-form-item>-->
           <el-form-item label="推荐商品">
             <el-radio v-model="currentEdit.isRecommend" :label="0">否</el-radio>
             <el-radio v-model="currentEdit.isRecommend" :label="1">是</el-radio>
@@ -167,12 +166,12 @@
               align: 'center',
               width: '120',
             },
-            {
-              prop: 'goodsContent',
-              label: '商品内容',
-              align: 'center',
-              width: '180',
-            },
+            // {
+            //   prop: 'goodsContent',
+            //   label: '商品内容',
+            //   align: 'center',
+            //   width: '180',
+            // },
             {
               prop: 'isShop',
               label: '状态',
@@ -195,19 +194,19 @@
                   return(<el-tag>{scope.row.goodsClassify.classifyName}</el-tag>)
               },
             },
-            {
-              prop: 'isCarousel',
-              label: '是否轮播',
-              align: 'center',
-              width: '100',
-              render: (h, scope) => {
-                if (scope.row.isCarousel === 0) {
-                  return(<el-tag type='success' >否</el-tag>)
-                } else {
-                  return(<el-tag type='primary' >是</el-tag>)
-                }
-              }
-            },
+            // {
+            //   prop: 'isCarousel',
+            //   label: '是否轮播',
+            //   align: 'center',
+            //   width: '100',
+            //   render: (h, scope) => {
+            //     if (scope.row.isCarousel === 0) {
+            //       return(<el-tag type='success' >否</el-tag>)
+            //     } else {
+            //       return(<el-tag type='primary' >是</el-tag>)
+            //     }
+            //   }
+            // },
             {
               prop: 'originalPrice',
               label: '原价',
