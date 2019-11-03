@@ -40,7 +40,7 @@
 
     <el-dialog :visible.sync="editdialogVisible"
                title="编辑"
-               append-to-body>
+               append-to-body :before-close="handleClose">
       <div class="dialog-content">
         <el-form  label-width="100px">
           <el-form-item label="商品名称">
@@ -179,7 +179,7 @@
                 ref="upload"
                 multiple
                 :file-list="carouselList"
-                list-type="picture-card" :limit="3">
+                list-type="picture-card" :limit="5">
                 <i class="el-icon-plus"/>
               </el-upload>
             </el-tabs>
@@ -215,7 +215,7 @@
                 ref="upload"
                 multiple
                 :file-list="detailsList"
-                list-type="picture-card" :limit="3">
+                list-type="picture-card" :limit="10">
                 <i class="el-icon-plus"/>
               </el-upload>
             </el-tabs>
@@ -894,6 +894,14 @@
           });
         });
       },
+      handleClose(done){
+          this.$confirm('确认关闭？')
+            .then(_ => {
+              done();
+            })
+            .catch(_ => {});
+        }
+
     }
   }
 </script>

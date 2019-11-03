@@ -47,7 +47,7 @@
     </lb-table>
 
     <!-- 添加与编辑 -->
-    <el-dialog :visible.sync="editdialogVisible" title="添加与编辑" append-to-body>
+    <el-dialog :visible.sync="editdialogVisible" title="添加与编辑" append-to-body :before-close="handleClose">
       <div class="dialog-content">
         <el-form label-width="100px" :model="currentEdit">
           <el-form-item label="商品类型">
@@ -593,6 +593,13 @@
         this.currentEdit.classifyId = value[value.length-1]
         this.param.classifyId = value[value.length-1]
       },
+      handleClose(done){
+        this.$confirm('确认关闭？')
+          .then(_ => {
+            done();
+          })
+          .catch(_ => {});
+      }
     }
   }
 </script>
