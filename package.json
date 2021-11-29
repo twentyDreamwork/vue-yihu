@@ -15,7 +15,7 @@
     "echarts": "^4.1.0",
     "element-ui": "^2.12.0",
     "font-awesome": "^4.7.0",
-    "mavon-editor": "^2.7.0",
+    "mavon-editor": "^2.8.2",
     "node-sass": "^4.12.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
